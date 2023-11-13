@@ -1,71 +1,85 @@
 #include "main.h"
+#include <stdlib.h>
 #include <stdarg.h>
-#include <unistd.h>
 
 /**
- * print_char - prints a character
- * @c: character to print
- * @ch_print: pointer to the character count
+ * specifiers_checker - function that checks for a valid format specifier
+ * @format: possible format specifier
+ *
+ * Return: pointer to valid function or NULL
  */
-
-void print_char(char c, int *ch_print)
+static int (*specifiers_checker(const char *format))(va_list)
 {
-        write(1, &c, 1);
-        (*ch_print)++;
+	unsigned int i;
+
+	print_t p[] = {
+		{"c", print_c},
+		{"s", print_s},
+		{"i", print_i},
+		{"d", print_d},
+		{"u", print_u},
+		{"b", print_b},
+		{"o", print_o},
+		{"x", print_x},
+		{"X", print_X},
+		{"p", print_p},
+		{"S", print_S},
+		{"r", print_r},
+		{"R", print_R},
+		{NULL, NULL}
+	};
+
+	for (i = 0; p[i].t != NULL; i++)
+	{
+		if (*(p[i].t) == *format)
+		{
+			break;
+		}
+	}
+	return (p[i].f);
 }
 
 /**
- * print_str - prints a string
- * @str: string to print
- * @ch_print: pointer to the character count
- */
-void print_str(char *ptr, int *ch_print)
-{
-        int string_len = 0;
-
-        while (ptr[string_len] != '\0')
-        {
-                string_len++;
-        }
-        write(1, ptr, string_len);
-        (*ch_print) += string_len;
-}
-
-/**
- * _printf - custom printf function
- * @format: format string
- * Return: number of characters printed (excluding null byte)
+ * _printf - function that prints based of format specifier.
+ * @format: format (char, string, int, decimal)
+ *
+ * Return: size the output text;
  */
 int _printf(const char *format, ...)
 {
-        int ch_print = 0;
-        va_list args_list;
+	unsigned int i = 0, count = 0;
+	va_list valist;
+	int (*f)(va_list);
 
-        va_start(args_list, format);
-
-        if (format == NULL)
-                return (-1);
-
-        while (*format)
-        {
-                if (*format != '%' && *format != '\0')
-                        print_char(*format, &ch_print);
-                else if (*format == '%')
-                {
-                        format++;
-                        if (*format == '\0')
-                                break;
-
-                        if (*format == '%')
-                                print_char('%', &ch_print);
-                        else if (*format == 'c')
-                                print_char(va_arg(args_list, int), &ch_print);
-                        else if (*format == 's')
-                                print_str(va_arg(args_list, char*), &ch_print);
-                }
-
-                format++;
-        }
-        va_end(args_list);
-        return (ch_print);
+	if (format == NULL)
+		return (-1);
+	va_start(valist, format);
+	while (format[i])
+	{
+		for (; format[i] != '%' && format[i]; i++)
+		{
+			_putchar(format[i]);
+			count++;
+		}
+		if (!format[i])
+			return (count);
+		f = specifiers_checker(&format[i + 1]);
+		if (f != NULL)
+		{
+			count += f(valist);
+			i += 2;
+			continue;
+		}
+		if (!format[i + 1])
+			return (-1);
+		_putchar(format[i]);
+		count++;
+		if (format[i + 1] == '%')
+			i += 2;
+		else
+			i++;
+	}
+	va_end(valist);
+	return (count);
 }
+
