@@ -8,32 +8,44 @@
 */
 int select_format(const char *fmt, va_list args, picker_t *p)
 {
-	int i = 0, j, lenght = 0;
-	int found = 0;
+    int i = 0, j, length = 0;
+    int found = 0;
 
-	while (fmt[i] != '\0')
-	{
-		j = 0;
+    while (fmt[i] != '\0')
+    {
+        if (fmt[i] == '%')
+        {
+            j = 0;
+            found = 0;
 
-		while (p[j].formatP)
-		{
-			if (strcmp(fmt + i, p[j].formatP) == 0)
-			{
-				lenght += p[j].funcP(args);
-				i += strlen(p[j].formatP);
-				found = 1;
-				break;
-			}
-			j++;
-		}
-		if (!found)
-		{
-			_putchar(fmt[i]);
-			lenght++;
-			i++;
-		}
-	}
-	return (lenght);
+            while (p[j].formatP)
+            {
+                if (strncmp(fmt + i, p[j].formatP, strlen(p[j].formatP)) == 0)
+                {
+                    length += p[j].funcP(args);
+                    i += strlen(p[j].formatP);
+                    found = 1;
+                    break;
+                }
+                j++;
+            }
+
+            if (!found)
+            {
+                _putchar(fmt[i]);
+                length++;
+                i++;
+            }
+        }
+        else
+        {
+            _putchar(fmt[i]);
+            length++;
+            i++;
+        }
+    }
+
+    return length;
 }
 
 /**
@@ -47,9 +59,14 @@ int _printf(const char *format, ...)
 	int lenght;
 
 	picker_t p[] = {
-		{"%i", printInt},
-		{NULL, NULL}
-	};
+    {"%i", printInt},
+    {"%d", printInt},
+    {"%%", print_mod},
+    {"%c", print_c},
+    {"%s", print_s},
+    {"%S", print_S},
+    {NULL, NULL}
+};
 
 	va_start(args, format);
 	if (format == NULL)
