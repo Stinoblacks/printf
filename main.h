@@ -19,7 +19,7 @@ typedef struct format
 	int (*funcP)();
 } picker_t;
 
-/*putcahr header */
+/*putcahr header*/
 int _putchar(char c);
 
 /*_printf header*/
@@ -30,7 +30,6 @@ int printInt(va_list args);
 int print_decimal(va_list args);
 int print_c(va_list c);
 int print_s(va_list s);
-static int hex_print(char c);
 int print_S(va_list S);
 int print_r(va_list r);
 int print_mod(void);
