@@ -48,6 +48,12 @@ int _printf(const char *format, ...)
 
 	picker_t p[] = {
 		{"%i", printInt},
+		{"%d", print_decimal},
+		{"%%", print_mod},
+		{"%c", print_c},
+		{"%s", print_s},
+		{"%S", print_S},
+		{"%X", hex_print},
 		{NULL, NULL}
 	};
 
