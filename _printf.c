@@ -74,7 +74,11 @@ int _printf(const char *format, ...)
 
 	va_start(args, format);
 	if (format == NULL)
+		_printf(NULL);
 		return (-1);
+	if (strcmp(format, "% ") == 0 || strcmp(format, "%\0") == 0)
+		return (-1);
+
 
 	lenght = select_format(format, args, p);
 
