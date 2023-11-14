@@ -1,51 +1,45 @@
 #include "main.h"
-
 /**
- * printInt - prints integer
- * @args: argument to print
- * Return: the integers to be printed
- */
-int printInt(va_list args)
+* printInt - prints integer
+* @args: argument to print
+* Return: the integers to be printed
+*/
+int printInt(va_list args) 
 {
     int n = va_arg(args, int);
-    int remainingDigits, lastDigit = n % 10, digit, exp = 1;
+    int remainingDigits, digit, exp = 1;
     int chars_printed = 0;
     int isNegative = 0;
 
-    if (lastDigit < 0)
+    if (n < 0)
     {
         _putchar('-');
-        isNegative = 1;
-        remainingDigits = -n;
-        lastDigit = -lastDigit;
+        n = -n;
         chars_printed++;
+        isNegative = 1;
     }
-    else
+
+    if (n == 0)
     {
-        remainingDigits = n;
+        _putchar('0');
+        return (1);
     }
 
-    if (remainingDigits > 0)
+    remainingDigits = n;
+
+    while (remainingDigits / exp > 9)
     {
-        while (remainingDigits / 10 != 0)
-        {
-            exp *= 10;
-            remainingDigits /= 10;
-        }
-        remainingDigits = n;
-
-        while (exp > 0)
-        {
-            digit = remainingDigits / exp;
-            _putchar(digit + '0');
-            chars_printed++;
-            remainingDigits -= digit * exp;
-            exp /= 10;
-        }
+        exp *= 10;
     }
 
-    _putchar(lastDigit + '0');
-    chars_printed++;
+    while (exp > 0)
+    {
+        digit = remainingDigits / exp;
+        _putchar(digit + '0');
+        chars_printed++;
+        remainingDigits -= digit * exp;
+        exp /= 10;
+    }
 
-    return chars_printed + isNegative;
+    return (chars_printed + isNegative);
 }
