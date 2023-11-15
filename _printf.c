@@ -1,5 +1,6 @@
 #include "main.h"
 #include <stdlib.h>
+#include <string.h>
 
 /**
  * select_format - selects the correct function to handle a format specifier
@@ -47,7 +48,6 @@ int select_format(const char *fmt, va_list args, picker_t *p)
 			i++;
 		}
 	}
-
 	return (length);
 }
 
@@ -56,11 +56,27 @@ int select_format(const char *fmt, va_list args, picker_t *p)
  * @format: format string
  * Return: number of characters printed
  */
-
 int _printf(const char *format, ...)
 {
+	if (format == NULL)
+		return (-1);
+
+	if (strcmp(format, "% ") == 0)
+	{
+		_putchar('%');
+		_putchar(' ');
+		return (2);
+	}
+
+	if (strcmp(format, "%\0") == 0)
+	{
+		_putchar('%');
+		_putchar('\0');
+		return (2);
+	}
+
 	va_list args;
-	int lenght;
+	int length;
 
 	picker_t p[] = {
 		{"%i", printInt},
@@ -69,19 +85,12 @@ int _printf(const char *format, ...)
 		{"%c", print_c},
 		{"%s", print_s},
 		{"%S", print_S},
-		{NULL, NULL}
-	};
+		{NULL, NULL}};
 
 	va_start(args, format);
-	if (format == NULL)
-		_printf(NULL);
-		return (-1);
-	if (strcmp(format, "% ") == 0 || strcmp(format, "%\0") == 0)
-		return (-1);
-
-
-	lenght = select_format(format, args, p);
-
+	length = select_format(format, args, p);
 	va_end(args);
-	return (lenght);
+
+	return (length);
 }
+
