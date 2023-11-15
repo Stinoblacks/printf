@@ -1,19 +1,19 @@
 #include "main.h"
 #include <stdlib.h>
-
 /**
  * check_for_specifiers - function that checks for a valid format specifier
- * * @format: possible format specifier
+ * @format: possible format specifier
  *
  * Return: pointer to valid function or NULL
  */
+
 static int (*check_for_specifiers(const char *format))(va_list)
 {
-	unsigned int i;
-	print_t p[] = {
-		{"c", print_c},
-		{"s", print_s},
-		{"i", print_i},
+    unsigned int i;
+    print_t p[] = {
+        {"c", print_c},
+        {"s", print_s},
+        {"i", print_i},
 		{"d", print_d},
 		{"u", print_u},
 		{"b", print_b},
@@ -26,10 +26,10 @@ static int (*check_for_specifiers(const char *format))(va_list)
 		{"R", print_R},
 		{NULL, NULL}
 	};
-
-	for (i = 0; p[i].t != NULL; i++)
-	{
-		if (*(p[i].t) == *format)
+    
+    for (i = 0; p[i].t != NULL; i++)
+    {
+        if (*(p[i].t) == *format)
 		{
 			break;
 		}
