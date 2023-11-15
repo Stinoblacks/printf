@@ -1,96 +1,82 @@
 #include "main.h"
 #include <stdlib.h>
-#include <string.h>
 
 /**
- * select_format - selects the correct function to handle a format specifier
- * @fmt: format specifier
- * @args: list of arguments
- * @p: array of format and function pairs
- * Return: the number of characters printed
+ * check_for_specifiers - function that checks for a valid format specifier
+ * * @format: possible format specifier
+ *
+ * Return: pointer to valid function or NULL
  */
-
-int select_format(const char *fmt, va_list args, picker_t *p)
+static int (*check_for_specifiers(const char *format))(va_list)
 {
-	int i = 0, j, length = 0;
-	int found = 0;
+	unsigned int i;
+	print_t p[] = {
+		{"c", print_c},
+		{"s", print_s},
+		{"i", print_i},
+		{"d", print_d},
+		{"u", print_u},
+		{"b", print_b},
+		{"o", print_o},
+		{"x", print_x},
+		{"X", print_X},
+		{"p", print_p},
+		{"S", print_S},
+		{"r", print_r},
+		{"R", print_R},
+		{NULL, NULL}
+	};
 
-	while (fmt[i] != '\0')
+	for (i = 0; p[i].t != NULL; i++)
 	{
-		if (fmt[i] == '%')
+		if (*(p[i].t) == *format)
 		{
-			j = 0;
-			found = 0;
-
-			while (p[j].formatP)
-			{
-				if (strncmp(fmt + i, p[j].formatP, strlen(p[j].formatP)) == 0)
-				{
-					length += p[j].funcP(args);
-					i += strlen(p[j].formatP);
-					found = 1;
-					break;
-				}
-				j++;
-			}
-
-			if (!found)
-			{
-				_putchar(fmt[i]);
-				length++;
-				i++;
-			}
-		}
-		else
-		{
-			_putchar(fmt[i]);
-			length++;
-			i++;
+			break;
 		}
 	}
-	return (length);
+	return (p[i].f);
 }
 
 /**
- * _printf - custom printf function
- * @format: format string
- * Return: number of characters printed
+ * _printf - function that produces output according to a format.
+ * @format: format (char, string, int, decimal)
+ *
+ * Return: size the output text;
  */
 int _printf(const char *format, ...)
 {
+	unsigned int i = 0, count = 0;
+	va_list valist;
+	int (*f)(va_list);
+
 	if (format == NULL)
 		return (-1);
-
-	if (strcmp(format, "% ") == 0)
+	va_start(valist, format);
+	while (format[i])
 	{
-		_putchar('%');
-		_putchar(' ');
-		return (2);
+		for (; format[i] != '%' && format[i]; i++)
+		{
+			_putchar(format[i]);
+			count++;
+		}
+		if (!format[i])
+			return (count);
+		f = check_for_specifiers(&format[i + 1]);
+		if (f != NULL)
+		{
+			count += f(valist);
+			i += 2;
+			continue;
+		}
+		if (!format[i + 1])
+			return (-1);
+		_putchar(format[i]);
+		count++;
+		if (format[i + 1] == '%')
+			i += 2;
+		else
+			i++;
 	}
-
-	if (strcmp(format, "%\0") == 0)
-	{
-		_putchar('%');
-		_putchar('\0');
-		return (2);
-	}
-
-	va_list args;
-	int length;
-
-	picker_t p[] = {
-		{"%i", printInt},
-		{"%d", printInt},
-		{"%%", print_mod},
-		{"%c", print_c},
-		{"%s", print_s},
-		{"%S", print_S},
-		{NULL, NULL}};
-
-	va_start(args, format);
-	length = select_format(format, args, p);
-	va_end(args);
-
-	return (length);
+	va_end(valist);
+	return (count);
 }
-

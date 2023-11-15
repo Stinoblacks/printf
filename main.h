@@ -2,21 +2,17 @@
 #define MAIN_H
 #include <stdarg.h>
 /**
- * struct picker - structure for printing various types
+ * struct print - structure for printing various types
  * @t: type to print
  * @f: function to print
  */
-typedef struct picker
+typedef struct print
 {
-	const char *formatP;
-	int (*funcP)(va_list);
-}picker_t;
-
-
+	char *t;
+	int (*f)(va_list);
+} print_t;
 
 int _putchar(char c);
-int printInt(va_list args);
-int print_mod(va_list args);
 int _printf(const char *format, ...);
 int print_c(va_list c);
 int print_s(va_list s);
