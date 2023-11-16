@@ -3,7 +3,7 @@
 
 /**
  * check_for_specifiers - function that checks for a valid format specifier
- * * @format: possible format specifier
+ * @format: possible format specifier
  *
  * Return: pointer to valid function or NULL
  */
@@ -30,11 +30,25 @@ static int (*check_for_specifiers(const char *format))(va_list)
 	for (i = 0; p[i].t != NULL; i++)
 	{
 		if (*(p[i].t) == *format)
-		{
 			break;
-		}
 	}
 	return (p[i].f);
+}
+
+/**
+ * handle_non_specifier - function to handle characters that are not format specifiers
+ * @ch: character to be handled
+ *
+ * Return: 1 if character is printed, 0 otherwise
+ */
+static int handle_non_specifier(char ch)
+{
+	if (ch != '%')
+	{
+		_putchar(ch);
+		return (1);
+	}
+	return (0);
 }
 
 /**
@@ -54,28 +68,29 @@ int _printf(const char *format, ...)
 	va_start(valist, format);
 	while (format[i])
 	{
-		for (; format[i] != '%' && format[i]; i++)
+		if (handle_non_specifier(format[i]))
 		{
-			_putchar(format[i]);
 			count++;
+			i++;
+			continue;
 		}
-		if (!format[i])
-			return (count);
 		f = check_for_specifiers(&format[i + 1]);
 		if (f != NULL)
 		{
 			count += f(valist);
 			i += 2;
-			continue;
 		}
-		if (!format[i + 1])
-			return (-1);
-		_putchar(format[i]);
-		count++;
-		if (format[i + 1] == '%')
-			i += 2;
+		else if (format[i + 1])
+		{
+			_putchar(format[i]);
+			count++;
+			if (format[i + 1] == '%')
+				i += 2;
+			else
+				i++;
+		}
 		else
-			i++;
+			return (-1);
 	}
 	va_end(valist);
 	return (count);
