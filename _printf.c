@@ -3,7 +3,7 @@
 * select_format - selects the correct function to handle a format specifier
 * @fmt: format specifier
 * @args: list of arguments
-* @p: array of format and function pairs
+* @p: array of format and functions
 * Return: the number of characters printed
 */
 int select_format(const char *fmt, va_list args, picker_t *p)
