@@ -67,4 +67,4 @@ _printf("%s, %s %d, %d\\n", weekday, month, day, year);
 .SH BUGS
 No known bugs.
 .SH AUTHOR
-Okpegwa Augustine Stinoblacks and Sadiq Sodiq
+Okpegwa Augustine Stinoblacks and Saidi Sodiq

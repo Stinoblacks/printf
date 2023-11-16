@@ -1,86 +1,87 @@
 #include "main.h"
-#include <stdlib.h>
-
 /**
- * check_for_specifiers - function that checks for a valid format specifier
- * @format: possible format specifier
- *
- * Return: pointer to valid function or NULL
- */
-static int (*check_for_specifiers(const char *format))(va_list)
+* select_format - selects the correct function to handle a format specifier
+* @fmt: format specifier
+* @args: list of arguments
+* @p: array of format and functions
+* Return: the number of characters printed
+*/
+int select_format(const char *fmt, va_list args, picker_t *p)
 {
-	unsigned int i;
-	print_t p[] = {
-		{"c", print_c},
-		{"s", print_s},
-		{"i", print_i},
-		{"d", print_d},
-		{"u", print_u},
-		{"b", print_b},
-		{"o", print_o},
-		{"x", print_x},
-		{"X", print_X},
-		{"p", print_p},
-		{"S", print_S},
-		{"r", print_r},
-		{"R", print_R},
-		{NULL, NULL}
-	};
+    int i = 0, j, length = 0;
+    int found = 0;
 
-	for (i = 0; p[i].t != NULL; i++)
-	{
-		if (*(p[i].t) == *format)
-		{
-			break;
-		}
-	}
-	return (p[i].f);
+    while (fmt[i] != '\0')
+    {
+        if (fmt[i] == '%')
+        {
+            j = 0;
+            found = 0;
+
+            while (p[j].formatP)
+            {
+                if (strncmp(fmt + i, p[j].formatP, strlen(p[j].formatP)) == 0)
+                {
+                    length += p[j].funcP(args);
+                    i += strlen(p[j].formatP);
+                    found = 1;
+                    break;
+                }
+                j++;
+            }
+
+            if (!found)
+            {
+                _putchar(fmt[i]);
+                length++;
+                i++;
+            }
+        }
+        else
+        {
+            _putchar(fmt[i]);
+            length++;
+            i++;
+        }
+    }
+
+    return length;
 }
 
 /**
- * _printf - function that produces output according to a format.
- * @format: format (char, string, int, decimal)
- *
- * Return: size the output text;
- */
+* _printf - custom printf function
+* @format: format string
+* Return: number of characters printed
+*/
 int _printf(const char *format, ...)
 {
-	unsigned int i = 0, count = 0;
-	va_list valist;
-	int (*f)(va_list);
+	va_list args;
+	int lenght;
 
+	picker_t p[] = {
+    {"%i", printInt},
+    {"%d", print_decimal},
+    {"%%", print_mod},
+    {"%c", print_c},
+    {"%s", print_s},
+    {"%S", print_S},
+	{"%b", print_b},
+	{"%u", print_o},
+	{"%o", print_u},
+	{"%p", print_p},
+	{"%X", print_X},
+	{"%x", print_x},
+	{"%R", print_R},
+	{"%r", print_r},
+    {NULL, NULL}
+};
+
+	va_start(args, format);
 	if (format == NULL)
 		return (-1);
-	va_start(valist, format);
-	while (format[i])
-	{
-		for (; format[i] != '%' && format[i]; i++)
-		{
-			_putchar(format[i]);
-			count++;
-		}
-		if (!format[i])
-			return (count);
-		f = check_for_specifiers(&format[i + 1]);
-		if (f != NULL)
-		{
-			count += f(valist);
-			i += 2;
-		}
-		else if (!format[i + 1])
-		{
-			return (-1);
-		}
-		else
-		{
-			_putchar(format[i]);
-			count++;
-			if (format[i + 1] == '%')
-				i += 2;
-			else
-				i++;
-		}
-	}
-	va_end(valist);
-	return (count);
+
+	lenght = select_format(format, args, p);
+
+	va_end(args);
+	return lenght;
 }
