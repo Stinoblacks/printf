@@ -60,11 +60,19 @@ int _printf(const char *format, ...)
 
 	picker_t p[] = {
     {"%i", printInt},
-    {"%d", printInt},
+    {"%d", print_decimal},
     {"%%", print_mod},
     {"%c", print_c},
     {"%s", print_s},
     {"%S", print_S},
+	{"%b", print_b},
+	{"%u", print_o},
+	{"%o", print_u},
+	{"%p", print_p},
+	{"%X", print_X},
+	{"%x", print_x},
+	{"%R", print_R},
+	{"%r", print_r},
     {NULL, NULL}
 };
 
